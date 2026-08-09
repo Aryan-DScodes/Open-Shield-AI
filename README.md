@@ -35,5 +35,5 @@ Built with **FastAPI**, **Redis**, and **Docker**, Open Shield acts as a secure 
 
 ### 1. Clone & Configure
 ```bash
-git clone [https://github.com/yourusername/open-shield.git](https://github.com/yourusername/open-shield.git)
+git clone [https://github.com/yourusername/open-shield.git](https://github.com/Aryan-DScodes/open-shield.git)
 cd open-shield
