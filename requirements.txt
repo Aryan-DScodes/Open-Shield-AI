@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+redis>=5.0.0
+python-dotenv
+onnxruntime
+prometheus-client
+httpx
+opencv-python-headless

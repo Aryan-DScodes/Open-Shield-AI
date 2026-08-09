@@ -1,0 +1,67 @@
+services:
+  # 1. FastAPI Gateway
+  api:
+    build: .
+    container_name: open_shield_api
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - UPSTREAM_LLM_API_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+      - UPSTREAM_API_KEY=${UPSTREAM_API_KEY}
+    depends_on:
+      - redis
+    networks:
+      - open_shield_net
+    restart: unless-stopped
+
+  # 2. Redis Stack (Includes RediSearch for Vector Similarity)
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: open_shield_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - open_shield_net
+    restart: unless-stopped
+
+  # 3. Prometheus (Metrics Scraper)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: open_shield_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - open_shield_net
+    restart: unless-stopped
+
+  # 4. Grafana (Dashboard UI)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: open_shield_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - open_shield_net
+    restart: unless-stopped
+
+networks:
+  open_shield_net:
+    driver: bridge
+
+volumes:
+  redis_data:
+  prometheus_data:
+  grafana_data:
